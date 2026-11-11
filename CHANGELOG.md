@@ -4,6 +4,8 @@ Add new entries under **Unreleased** as you work. When releasing, rename it to t
 
 ## Unreleased
 
+## 1.4.1
+
 - Releases now include SHA-256 checksums and a GitHub build attestation, so you can confirm a download is exactly what was built from this repository. See **Verify your download** in the README.
 
 ## 1.4.0
