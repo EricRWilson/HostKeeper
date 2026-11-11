@@ -12,15 +12,23 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Check the tag matches Version.swift
         run: |
           VERSION=$(sed -n 's/.*static let version = "\(.*\)"/\1/p' Sources/HostKeeper/Version.swift)
+          BUILD=$(sed -n 's/.*static let build = "\(.*\)"/\1/p' Sources/HostKeeper/Version.swift)
           if [ "v$VERSION" != "$GITHUB_REF_NAME" ]; then
             echo "::error::Tag $GITHUB_REF_NAME doesn't match Version.swift ($VERSION). Update one of them."
             exit 1
           fi
+          if ! grep -qx "## $VERSION" CHANGELOG.md; then
+            echo "::error::CHANGELOG.md has no '## $VERSION' section. Add release notes first."
+            exit 1
+          fi
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          echo "BUILD=$BUILD" >> "$GITHUB_ENV"
 
       - name: Test
         run: swift test
@@ -28,14 +36,25 @@ jobs:
       - name: Build app, DMG and ZIP
         run: ./build-app.sh
 
+      - name: Sign the update and write the update feed and Homebrew cask
+        env:
+          SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
+        run: |
+          KEY_FILE="$RUNNER_TEMP/sparkle_key"
+          (umask 077; printf '%s' "$SPARKLE_PRIVATE_KEY" > "$KEY_FILE")
+          SIG=$(.build/artifacts/sparkle/Sparkle/bin/sign_update --ed-key-file "$KEY_FILE" "build/HostKeeper-$VERSION.zip")
+          rm -f "$KEY_FILE"
+          python3 scripts/release_files.py "$VERSION" "$BUILD" "build/HostKeeper-$VERSION.zip" "$SIG"
+
       - name: Release notes from CHANGELOG.md
         run: |
           awk -v v="## $VERSION" '$0 == v {found=1; next} /^## / && found {exit} found' CHANGELOG.md > notes.md
           cat >> notes.md <<'NOTES'
 
           ### Install
-          Download **HostKeeper-${{ env.VERSION }}.dmg**, open it and drag HostKeeper to Applications.
-          The first time you open it, macOS blocks it because it isn't signed with a paid Apple Developer ID: click **Done**, then go to **System Settings → Privacy & Security** and click **Open Anyway**. See the [README](https://github.com/${{ github.repository }}#install) for details.
+          - **Already have HostKeeper 1.4 or later?** Choose **HostKeeper → Check for Updates…**
+          - **Homebrew:** `brew upgrade --cask hostkeeper` (first time: see the [README](https://github.com/${{ github.repository }}#install))
+          - **Download:** open **HostKeeper-${{ env.VERSION }}.dmg** and drag HostKeeper to Applications. The first time you open it, click **Done**, then **System Settings → Privacy & Security → Open Anyway**.
           NOTES
 
       - name: Publish GitHub Release
@@ -43,5 +62,20 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release create "$GITHUB_REF_NAME" \
-            "build/HostKeeper-$VERSION.dmg" "build/HostKeeper-$VERSION.zip" \
+            "build/HostKeeper-$VERSION.dmg" "build/HostKeeper-$VERSION.zip" build/appcast.xml \
             --title "HostKeeper $VERSION" --notes-file notes.md
+
+      - name: Commit the updated Homebrew cask to main
+        run: |
+          cp Casks/hostkeeper.rb "$RUNNER_TEMP/hostkeeper.rb"
+          git fetch origin main
+          git checkout -B main origin/main
+          cp "$RUNNER_TEMP/hostkeeper.rb" Casks/hostkeeper.rb
+          if git diff --quiet; then
+            echo "Cask already up to date."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "Update Homebrew cask to $VERSION [skip ci]"
+          git push origin main

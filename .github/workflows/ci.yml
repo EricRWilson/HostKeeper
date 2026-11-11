@@ -18,3 +18,23 @@ jobs:
         run: swift test
       - name: Build release app
         run: ./build-app.sh --app-only
+
+  changelog:
+    # Any pull request that changes the app must say what changed. Add the
+    # "skip-changelog" label for changes users won't notice (refactors, CI tweaks).
+    if: github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'skip-changelog')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Require a CHANGELOG.md entry when app code changes
+        run: |
+          CHANGED=$(git diff --name-only "origin/${{ github.base_ref }}...HEAD")
+          echo "$CHANGED"
+          if echo "$CHANGED" | grep -qE '^(Sources/|Package\.swift|Resources/)'; then
+            if ! echo "$CHANGED" | grep -qx 'CHANGELOG.md'; then
+              echo "::error::App code changed but CHANGELOG.md didn't. Add a line under '## Unreleased', or add the skip-changelog label."
+              exit 1
+            fi
+          fi

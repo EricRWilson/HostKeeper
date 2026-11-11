@@ -1,5 +1,16 @@
 # Changelog
 
+Add new entries under **Unreleased** as you work. When releasing, rename it to the new version number.
+
+## Unreleased
+
+## 1.4.0
+
+- **Automatic updates:** HostKeeper checks for new versions once a day, shows what's new, and installs updates for you. Choose **HostKeeper → Check for Updates…** to check now, or turn automatic checks off in Settings.
+- **Homebrew:** install with `brew install --cask hostkeeper` after adding the tap (see the README), and update with `brew upgrade`.
+- The app icon now shows in the Dock when running a development build from Xcode.
+- If you have 1.3.0, download 1.4.0 once by hand. After that, updates arrive automatically.
+
 ## 1.3.0
 
 First public release.

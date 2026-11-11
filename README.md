@@ -27,8 +27,23 @@ HostKeeper edits `~/.ssh/config`, the file the `ssh` command built into macOS re
 - **Safe saving:** ssh checks every change before it's written, your comments and formatting are kept exactly, and every save keeps a backup you can restore.
 - **Menu bar:** connect to any host from the menu bar.
 - **Built-in help:** a guide to every feature and plain-language explanations of SSH options.
+- **Automatic updates:** new versions install themselves after you approve them.
 
 ## Install
+
+### With Homebrew
+
+```bash
+brew tap ericrwilson/hostkeeper https://github.com/EricRWilson/HostKeeper
+```
+
+```bash
+brew install --cask hostkeeper
+```
+
+The first time you open it, macOS blocks it; see step 3 below.
+
+### By download
 
 1. Download **HostKeeper-x.y.z.dmg** from the [latest release](https://github.com/EricRWilson/HostKeeper/releases/latest).
 2. Open the DMG and drag **HostKeeper** into **Applications**.
@@ -44,9 +59,18 @@ HostKeeper edits `~/.ssh/config`, the file the `ssh` command built into macOS re
 
 Requires macOS 14 Sonoma or later. Runs natively on Apple Silicon and Intel Macs.
 
-### Is it safe?
+## Updates
 
-HostKeeper is fully open source, so you can read every line or [build it yourself](docs/DEVELOPMENT.md). It never connects to the internet except when you click Connect or Test, and it never sends anything anywhere. Before every save it keeps a backup in `~/.ssh/hostkeeper-backups`.
+HostKeeper checks for a new version once a day. When there is one, it shows what's new and installs it after you click **Install Update**. Your hosts, folders, tags and backups are kept. To check right away, choose **HostKeeper → Check for Updates…**. To turn off automatic checks, open **HostKeeper → Settings**.
+
+- **Homebrew:** `brew upgrade --cask hostkeeper` also works.
+- **Upgrading from 1.3.0:** that version can't update itself, so download the latest version once by hand. Updates are automatic from then on.
+
+Every update is signed, and HostKeeper refuses any download that isn't signed with the project's key.
+
+## Is it safe?
+
+HostKeeper is fully open source, so you can read every line or [build it yourself](docs/DEVELOPMENT.md). It only goes online to check GitHub for updates and when you click Connect or Test, and it never sends your data anywhere. Before every save it keeps a backup in `~/.ssh/hostkeeper-backups`.
 
 ## How folders, tags and notes are stored
 

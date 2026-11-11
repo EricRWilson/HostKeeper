@@ -8,13 +8,18 @@ cd "${0:A:h}"
 VERSION=$(sed -n 's/.*static let version = "\(.*\)"/\1/p' Sources/HostKeeper/Version.swift)
 BUILD=$(sed -n 's/.*static let build = "\(.*\)"/\1/p' Sources/HostKeeper/Version.swift)
 APP="build/HostKeeper.app"
+REPO="EricRWilson/HostKeeper"
+# Public half of the update signing key; the private half is in the maintainer's Keychain
+# and in the SPARKLE_PRIVATE_KEY GitHub secret. Never change it, or installed copies can't update.
+SPARKLE_PUBLIC_KEY="3FQVrdakKox+AjQiMzKkvGe41W8jA7XHTAuyM07TFpY="
 
 swift build -c release --arch arm64 --arch x86_64
-BIN="$(swift build -c release --arch arm64 --arch x86_64 --show-bin-path)/HostKeeper"
+BIN_DIR="$(swift build -c release --arch arm64 --arch x86_64 --show-bin-path)"
 
 rm -rf "$APP"
-mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
-cp "$BIN" "$APP/Contents/MacOS/HostKeeper"
+mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources" "$APP/Contents/Frameworks"
+cp "$BIN_DIR/HostKeeper" "$APP/Contents/MacOS/HostKeeper"
+ditto "$BIN_DIR/Sparkle.framework" "$APP/Contents/Frameworks/Sparkle.framework"
 cp Resources/AppIcon.icns "$APP/Contents/Resources/AppIcon.icns"
 
 cat > "$APP/Contents/Info.plist" <<PLIST
@@ -34,13 +39,15 @@ cat > "$APP/Contents/Info.plist" <<PLIST
     <key>LSApplicationCategoryType</key><string>public.app-category.developer-tools</string>
     <key>NSHumanReadableCopyright</key><string>Free and open source under the MIT License.</string>
     <key>NSHighResolutionCapable</key><true/>
+    <key>SUFeedURL</key><string>https://github.com/$REPO/releases/latest/download/appcast.xml</string>
+    <key>SUPublicEDKey</key><string>$SPARKLE_PUBLIC_KEY</string>
 </dict>
 </plist>
 PLIST
 
 # Ad-hoc signature. Without a paid Apple Developer ID the app can't be notarized,
 # so people who download it approve it once in System Settings (see README).
-codesign --force --sign - "$APP"
+codesign --force --deep --sign - "$APP"
 echo "Built $APP (version $VERSION, build $BUILD, $(lipo -archs "$APP/Contents/MacOS/HostKeeper"))"
 
 [[ "${1:-}" == "--app-only" ]] && exit 0

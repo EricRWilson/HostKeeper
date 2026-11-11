@@ -9,6 +9,7 @@ struct HostKeeperApp: App {
 
     init() {
         Self.migrateSettings()
+        _ = Updater.shared  // starts Sparkle's scheduled update checks
     }
 
     /// Versions before 1.3 used the bundle ID local.hostkeeper.app; carry their settings over once.
@@ -37,6 +38,7 @@ struct HostKeeperApp: App {
                     ])
                     NSApp.activate()
                 }
+                CheckForUpdatesButton()
             }
             CommandGroup(replacing: .help) {
                 HelpMenuItems()
@@ -58,16 +60,36 @@ struct HostKeeperApp: App {
         }
 
         Settings {
-            Form {
-                Toggle("Show quick-connect menu in the menu bar", isOn: $showMenuBar)
-                Text("When it's on, closing the window keeps HostKeeper running in the menu bar.")
-                    .font(.caption).foregroundStyle(.secondary)
-                Divider()
-                LabeledContent("HostKeeper", value: AppVersion.display)
-            }
-            .padding()
-            .frame(width: 420)
+            SettingsView(showMenuBar: $showMenuBar)
         }
+    }
+}
+
+private struct SettingsView: View {
+    @Binding var showMenuBar: Bool
+    @Bindable private var updater = Updater.shared
+
+    var body: some View {
+        Form {
+            Toggle("Show quick-connect menu in the menu bar", isOn: $showMenuBar)
+            Text("When it's on, closing the window keeps HostKeeper running in the menu bar.")
+                .font(.caption).foregroundStyle(.secondary)
+            Divider()
+            Toggle("Automatically check for updates", isOn: $updater.automaticallyChecks)
+                .disabled(!updater.isAvailable)
+            HStack {
+                Text(updater.isAvailable
+                     ? "HostKeeper checks once a day and asks before installing anything."
+                     : "Updates are only available in the installed app, not in development builds.")
+                    .font(.caption).foregroundStyle(.secondary)
+                Spacer()
+                CheckForUpdatesButton()
+            }
+            Divider()
+            LabeledContent("HostKeeper", value: AppVersion.display)
+        }
+        .padding()
+        .frame(width: 460)
     }
 }
 
@@ -111,6 +133,7 @@ private struct QuickConnectMenu: View {
             openWindow(id: "help")
             NSApp.activate()
         }
+        CheckForUpdatesButton()
         Button("Open HostKeeper…") {
             openWindow(id: "main")
             NSApp.activate()
@@ -125,7 +148,7 @@ private struct QuickConnectMenu: View {
 }
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
-    func applicationDidFinishLaunching(_ notification: Notification) {
+    @MainActor func applicationDidFinishLaunching(_ notification: Notification) {
         // Needed when launched as a bare executable from Xcode/SwiftPM rather than a bundled .app.
         NSApp.setActivationPolicy(.regular)
         if Bundle.main.bundleURL.pathExtension != "app" { Self.useIconFromSourceTree() }
@@ -133,7 +156,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     /// A bare executable (Xcode ⌘R, `swift run`) has no bundle icon, so load it from the repo for the Dock.
-    private static func useIconFromSourceTree(sourceFile: String = #filePath) {
+    @MainActor private static func useIconFromSourceTree(sourceFile: String = #filePath) {
         let icon = URL(filePath: sourceFile)
             .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
             .appending(path: "Resources/AppIcon.icns")

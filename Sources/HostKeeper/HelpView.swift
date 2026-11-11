@@ -10,6 +10,7 @@ enum HelpTopic: String, CaseIterable, Identifiable {
     case connecting = "Connecting & Testing"
     case saving = "Saving & Backups"
     case menuBar = "Menu Bar"
+    case updates = "Updates"
     case options = "Option Reference"
     case troubleshooting = "Troubleshooting"
     case shortcuts = "Keyboard Shortcuts"
@@ -26,6 +27,7 @@ enum HelpTopic: String, CaseIterable, Identifiable {
         case .connecting: "terminal"
         case .saving: "clock.arrow.circlepath"
         case .menuBar: "menubar.rectangle"
+        case .updates: "arrow.down.circle"
         case .options: "list.bullet.rectangle"
         case .troubleshooting: "wrench.and.screwdriver"
         case .shortcuts: "keyboard"
@@ -212,6 +214,23 @@ struct HelpView: View {
             para("The terminal icon in the menu bar lists your hosts, grouped by folder. Pick one to connect in Terminal right away.")
             para("While it's on, closing the HostKeeper window keeps the app running in the menu bar. Use Quit HostKeeper in that menu, or ⌘Q, to quit fully.")
             para("Turn the icon on or off in HostKeeper ▸ Settings (⌘,).")
+
+        case .updates:
+            heading("Updates")
+            para("HostKeeper checks for a new version once a day. When one is available, it shows what's new and asks before installing anything.")
+            step(1, "Click Install Update.")
+            step(2, "When the download finishes, click Install and Relaunch. HostKeeper restarts on the new version.")
+            para("Your hosts, folders, tags, notes, keys and backups are all kept. They live in ~/.ssh and your settings, not inside the app.")
+            subheading("Checking now")
+            para("Choose HostKeeper ▸ Check for Updates…, or use the same item in the menu bar icon.")
+            subheading("Turning automatic checks off")
+            para("Open HostKeeper ▸ Settings (⌘,) and turn off Automatically check for updates. You can still check by hand.")
+            subheading("Is it safe?")
+            para("Every update is signed by the HostKeeper project. HostKeeper checks that signature and refuses anything that doesn't match, so a tampered download can't be installed.")
+            subheading("Homebrew")
+            para("If you installed with Homebrew, updates work the same way, and brew upgrade --cask hostkeeper also works.")
+            subheading("Development builds")
+            para("Builds run from Xcode or swift run don't check for updates; Check for Updates… is greyed out there.")
 
         case .options:
             EmptyView()
