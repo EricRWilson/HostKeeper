@@ -1,6 +1,6 @@
 cask "hostkeeper" do
-  version "1.3.0"
-  sha256 "a661767eedfe0d40f338f9790937bac7329df5567bd7fb91b145be44df159ead"
+  version "1.4.0"
+  sha256 "704f98b38295610df15f038474e00b71d89e4b629298f8d966c0d224b8ad70db"
 
   url "https://github.com/EricRWilson/HostKeeper/releases/download/v#{version}/HostKeeper-#{version}.zip"
   name "HostKeeper"
