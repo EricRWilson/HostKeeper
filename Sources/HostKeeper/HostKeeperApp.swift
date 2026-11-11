@@ -33,7 +33,7 @@ struct HostKeeperApp: App {
                     NSApp.orderFrontStandardAboutPanel(options: [
                         .applicationName: "HostKeeper",
                         .applicationVersion: AppVersion.version,
-                        .version: AppVersion.build,
+                        .version: "",  // empty hides the "(build)" after the version
                         .credits: NSAttributedString(string: "A free editor for ~/.ssh/config and your SSH keys."),
                     ])
                     NSApp.activate()
