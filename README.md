@@ -53,7 +53,8 @@ brew install --cask hostkeeper
 2. Open the DMG and drag **HostKeeper** into **Applications**.
 3. Open HostKeeper from Applications. The first time, macOS blocks it, because the app isn't signed with a paid Apple Developer ID:
    - Click **Done** (not Move to Trash).
-   - Open **System Settings → Privacy & Security**, scroll down, and click **Open Anyway** next to the HostKeeper message. Confirm with your password.
+   - Open **System Settings → Privacy & Security**, scroll down to **Security**, and click **Open Anyway** next to the HostKeeper message. Confirm with your password.
+   - Don't see **Open Anyway**? It only appears for about an hour after a blocked attempt. Quit System Settings, open HostKeeper again, click **Done**, then reopen System Settings right away. Or use the Terminal command below.
 
    You only need to do this once. Or, if you prefer Terminal:
 
