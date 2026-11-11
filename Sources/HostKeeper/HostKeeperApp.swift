@@ -128,7 +128,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         // Needed when launched as a bare executable from Xcode/SwiftPM rather than a bundled .app.
         NSApp.setActivationPolicy(.regular)
+        if Bundle.main.bundleURL.pathExtension != "app" { Self.useIconFromSourceTree() }
         NSApp.activate()
+    }
+
+    /// A bare executable (Xcode ⌘R, `swift run`) has no bundle icon, so load it from the repo for the Dock.
+    private static func useIconFromSourceTree(sourceFile: String = #filePath) {
+        let icon = URL(filePath: sourceFile)
+            .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+            .appending(path: "Resources/AppIcon.icns")
+        if let image = NSImage(contentsOf: icon) { NSApp.applicationIconImage = image }
     }
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
