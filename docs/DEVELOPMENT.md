@@ -137,6 +137,10 @@ brew tap ericrwilson/hostkeeper https://github.com/EricRWilson/HostKeeper
 ```
 
 ```bash
+brew trust ericrwilson/hostkeeper
+```
+
+```bash
 brew install --cask hostkeeper
 ```
 

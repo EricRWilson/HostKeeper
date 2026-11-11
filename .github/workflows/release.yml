@@ -53,7 +53,7 @@ jobs:
 
           ### Install
           - **Already have HostKeeper 1.4 or later?** Choose **HostKeeper → Check for Updates…**
-          - **Homebrew:** `brew upgrade --cask hostkeeper` (first time: see the [README](https://github.com/${{ github.repository }}#install))
+          - **Homebrew:** `brew upgrade --cask hostkeeper` (first time: add and trust the tap, see the [README](https://github.com/${{ github.repository }}#install))
           - **Download:** open **HostKeeper-${{ env.VERSION }}.dmg** and drag HostKeeper to Applications. The first time you open it, click **Done**, then **System Settings → Privacy & Security → Open Anyway**.
           NOTES
 

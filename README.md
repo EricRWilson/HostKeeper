@@ -38,10 +38,14 @@ brew tap ericrwilson/hostkeeper https://github.com/EricRWilson/HostKeeper
 ```
 
 ```bash
+brew trust ericrwilson/hostkeeper
+```
+
+```bash
 brew install --cask hostkeeper
 ```
 
-The first time you open it, macOS blocks it; see step 3 below.
+`brew trust` is needed because Homebrew only loads apps from taps you've approved. The first time you open HostKeeper, macOS blocks it; see step 3 below.
 
 ### By download
 
