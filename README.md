@@ -13,6 +13,9 @@
   <a href="https://github.com/EricRWilson/HostKeeper/releases/latest"><b>Download the latest version</b></a>
 </p>
 
+> [!IMPORTANT]
+> **The first time you open HostKeeper, macOS blocks it.** To allow it, go to **System Settings → Privacy & Security** and click **Open Anyway**. You only do this once. [Step-by-step instructions](#first-launch-allow-hostkeeper-in-privacy--security)
+
 ---
 
 HostKeeper edits `~/.ssh/config`, the file the `ssh` command built into macOS reads to know your servers. Add a host once, then connect with just `ssh myserver`. HostKeeper only edits that file, so `ssh` keeps working whether HostKeeper is open or not.
@@ -45,24 +48,49 @@ brew trust ericrwilson/hostkeeper
 brew install --cask hostkeeper
 ```
 
-`brew trust` is needed because Homebrew only loads apps from taps you've approved. The first time you open HostKeeper, macOS blocks it; see step 3 below.
+`brew trust` is needed because Homebrew only loads apps from taps you've approved. Then follow [First launch](#first-launch-allow-hostkeeper-in-privacy--security) below the first time you open it.
 
 ### By download
 
 1. Download **HostKeeper-x.y.z.dmg** from the [latest release](https://github.com/EricRWilson/HostKeeper/releases/latest).
 2. Open the DMG and drag **HostKeeper** into **Applications**.
-3. Open HostKeeper from Applications. The first time, macOS blocks it, because the app isn't signed with a paid Apple Developer ID:
-   - Click **Done** (not Move to Trash).
-   - Open **System Settings → Privacy & Security**, scroll down to **Security**, and click **Open Anyway** next to the HostKeeper message. Confirm with your password.
-   - Don't see **Open Anyway**? It only appears for about an hour after a blocked attempt. Quit System Settings, open HostKeeper again, click **Done**, then reopen System Settings right away. Or use the Terminal command below.
-
-   You only need to do this once. Or, if you prefer Terminal:
-
-   ```bash
-   xattr -dr com.apple.quarantine /Applications/HostKeeper.app
-   ```
+3. Open HostKeeper from Applications, and follow [First launch](#first-launch-allow-hostkeeper-in-privacy--security) below.
 
 Requires macOS 14 Sonoma or later. Runs natively on Apple Silicon and Intel Macs.
+
+## First launch: allow HostKeeper in Privacy & Security
+
+The first time you open HostKeeper, macOS shows a warning like this and won't open it:
+
+> Apple could not verify “HostKeeper” is free of malware that may harm your Mac or compromise your privacy.
+
+That's because HostKeeper isn't signed with a paid Apple Developer ID, so Apple hasn't checked it. It's free and [open source](#is-it-safe), so you can read the code yourself. To allow it:
+
+1. On the warning, click **Done**. Don't click Move to Trash.
+2. Open **System Settings** (click the Apple menu at the top left, then System Settings).
+3. Click **Privacy & Security** in the sidebar.
+4. Scroll all the way down to the **Security** heading. You'll see *“HostKeeper” was blocked to protect your Mac.*
+5. Click **Open Anyway**.
+6. Enter your Mac password, or use Touch ID.
+7. Click **Open Anyway** once more in the window that pops up.
+
+HostKeeper opens, and macOS remembers your choice. **You only do this once.** Updates installed with **Check for Updates…** don't show the warning again.
+
+### Don't see Open Anyway?
+
+The button only appears for about an hour after macOS blocks the app, and only if System Settings is opened afterwards. So:
+
+1. Quit System Settings completely (⌘Q).
+2. Open HostKeeper again from Applications, and click **Done** on the warning.
+3. Open **System Settings → Privacy & Security** straight away and scroll to **Security**.
+
+### Or use Terminal
+
+This removes the “downloaded from the internet” mark from HostKeeper only, which has the same effect:
+
+```bash
+xattr -dr com.apple.quarantine /Applications/HostKeeper.app
+```
 
 ## Updates
 
