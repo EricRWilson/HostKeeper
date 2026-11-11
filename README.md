@@ -72,6 +72,28 @@ HostKeeper checks for a new version once a day. When there is one, it shows what
 
 Every update is signed, and HostKeeper refuses any download that isn't signed with the project's key.
 
+## Verify your download
+
+Every release is built by GitHub Actions straight from this repository, never on someone's laptop, and GitHub signs a record of exactly which files it built.
+
+**Check the build record** (needs the [GitHub CLI](https://cli.github.com)):
+
+```bash
+gh attestation verify HostKeeper-1.4.1.dmg --repo EricRWilson/HostKeeper
+```
+
+A passing check proves the file is byte-for-byte what this repository's release workflow built, and shows the commit it came from.
+
+**Or compare checksums.** Each release lists SHA-256 checksums in its notes and in `SHA256SUMS.txt`. Run this in the folder you downloaded to, and check the result matches:
+
+```bash
+shasum -a 256 HostKeeper-1.4.1.dmg
+```
+
+Use the version number of the file you downloaded. Releases before 1.4.1 don't have these.
+
+Updates installed from inside the app are checked automatically: HostKeeper refuses any update that isn't signed with the project's key.
+
 ## Is it safe?
 
 HostKeeper is fully open source, so you can read every line or [build it yourself](docs/DEVELOPMENT.md). It only goes online to check GitHub for updates and when you click Connect or Test, and it never sends your data anywhere. Before every save it keeps a backup in `~/.ssh/hostkeeper-backups`.

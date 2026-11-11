@@ -101,8 +101,9 @@ The **Release** workflow then, in about five minutes:
 1. Checks the tag matches `Version.swift` and that `CHANGELOG.md` has notes for that version.
 2. Runs the tests and builds the app, DMG and ZIP.
 3. Signs the ZIP with the update key and writes `appcast.xml`, using the changelog entry as the "what's new" notes.
-4. Publishes a GitHub Release with the DMG, ZIP and `appcast.xml`.
-5. Commits the updated `Casks/hostkeeper.rb` to `main`, so `brew upgrade` sees it.
+4. Writes SHA-256 checksums and has GitHub sign a build attestation for the DMG and ZIP.
+5. Publishes a GitHub Release with the DMG, ZIP, `appcast.xml` and `SHA256SUMS.txt`, with the checksums and verify steps in the notes.
+6. Commits the updated `Casks/hostkeeper.rb` to `main`, so `brew upgrade` sees it.
 
 Installed copies find the update through `releases/latest/download/appcast.xml`, within a day, or right away with **Check for Updates…**. Watch the workflow under the repository's **Actions** tab.
 

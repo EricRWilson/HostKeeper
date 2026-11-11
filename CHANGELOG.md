@@ -4,6 +4,8 @@ Add new entries under **Unreleased** as you work. When releasing, rename it to t
 
 ## Unreleased
 
+- Releases now include SHA-256 checksums and a GitHub build attestation, so you can confirm a download is exactly what was built from this repository. See **Verify your download** in the README.
+
 ## 1.4.0
 
 - **Automatic updates:** HostKeeper checks for new versions once a day, shows what's new, and installs updates for you. Choose **HostKeeper → Check for Updates…** to check now, or turn automatic checks off in Settings.
