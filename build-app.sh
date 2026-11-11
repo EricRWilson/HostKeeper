@@ -50,6 +50,9 @@ PLIST
 codesign --force --deep --sign - "$APP"
 echo "Built $APP (version $VERSION, build $BUILD, $(lipo -archs "$APP/Contents/MacOS/HostKeeper"))"
 
+# Keep Spotlight and the Dock opening the installed copy in /Applications, not this build output.
+/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -u "$PWD/$APP" 2>/dev/null || true
+
 [[ "${1:-}" == "--app-only" ]] && exit 0
 
 ZIP="build/HostKeeper-$VERSION.zip"
