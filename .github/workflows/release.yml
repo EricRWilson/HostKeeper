@@ -1,0 +1,47 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check the tag matches Version.swift
+        run: |
+          VERSION=$(sed -n 's/.*static let version = "\(.*\)"/\1/p' Sources/HostKeeper/Version.swift)
+          if [ "v$VERSION" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME doesn't match Version.swift ($VERSION). Update one of them."
+            exit 1
+          fi
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+
+      - name: Test
+        run: swift test
+
+      - name: Build app, DMG and ZIP
+        run: ./build-app.sh
+
+      - name: Release notes from CHANGELOG.md
+        run: |
+          awk -v v="## $VERSION" '$0 == v {found=1; next} /^## / && found {exit} found' CHANGELOG.md > notes.md
+          cat >> notes.md <<'NOTES'
+
+          ### Install
+          Download **HostKeeper-${{ env.VERSION }}.dmg**, open it and drag HostKeeper to Applications.
+          The first time you open it, macOS blocks it because it isn't signed with a paid Apple Developer ID: click **Done**, then go to **System Settings → Privacy & Security** and click **Open Anyway**. See the [README](https://github.com/${{ github.repository }}#install) for details.
+          NOTES
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            "build/HostKeeper-$VERSION.dmg" "build/HostKeeper-$VERSION.zip" \
+            --title "HostKeeper $VERSION" --notes-file notes.md

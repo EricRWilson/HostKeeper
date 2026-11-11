@@ -1,0 +1,32 @@
+# Changelog
+
+## 1.3.0
+
+First public release.
+
+- New app icon.
+- Runs natively on both Apple Silicon and Intel Macs.
+- Downloads as a DMG or ZIP from GitHub Releases.
+- Development builds use a practice config, so working on HostKeeper never touches your real `~/.ssh`.
+
+## 1.2.0
+
+- Tags for hosts and keys, with colors.
+- Search by tag with `#tag`, plus a tag filter menu in the toolbar.
+- Group the sidebar by Folders, Tags, or show All.
+- Rename or remove a tag everywhere at once.
+
+## 1.1.0
+
+- Built-in Help with a guide to every feature.
+- Plain-language reference for 37 ssh options, shown as tooltips on the host page.
+- Version number in About, Settings and the sidebar.
+
+## 1.0.0
+
+- Edit hosts in `~/.ssh/config` while keeping comments and formatting exactly.
+- Folders and notes.
+- SSH key management: generate, import, copy public keys, add to Keychain, fix permissions.
+- Test Connection and Install Public Key on Server.
+- Every change is checked by ssh before saving, and each save keeps a backup.
+- Menu bar quick-connect.
